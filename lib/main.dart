@@ -1,8 +1,15 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:lasylab_mobile_app/models/user.dart';
 import 'package:lasylab_mobile_app/routes.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:lasylab_mobile_app/services/database_service.dart';
+import 'package:logger/logger.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  await GetStorage.init();
   runApp(MyApp(initialRoute: "/"));
 }
 
@@ -16,8 +23,25 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      initialRoute: initialRoute,
+      initialRoute: getRoutes(), // initialRoute,
       routes: routes,
     );
+  }
+}
+
+String getRoutes() {
+  final box = GetStorage();
+  bool onboarding = box.read("onboarding") ?? false;
+
+  Usermodel? user = DBService().getLocalUser();
+
+  if (onboarding) {
+    if (user != null) {
+      return "/welcome_fees";
+    } else {
+      return "/login";
+    }
+  } else {
+    return "/";
   }
 }

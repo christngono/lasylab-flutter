@@ -245,7 +245,8 @@ class _ClassesChoiceState extends State<ClassesChoice> {
                               size: 18,
                               color: HexColor("#58CC02"),
                               onPressed: () {
-                                Navigator.of(context).pushNamed("/register");
+                                Navigator.of(context)
+                                    .pushNamed("/fees_formula"); // "/register"
                               },
                               duration: const Duration(milliseconds: 160),
                             ),

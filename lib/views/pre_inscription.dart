@@ -112,7 +112,7 @@ class PreInscription extends StatelessWidget {
                             size: 18,
                             color: HexColor("#58CC02"),
                             onPressed: () {
-                              Navigator.of(context).pushNamed("/login");
+                              Navigator.of(context).pushNamed("/register");
                             },
                             duration: const Duration(milliseconds: 160),
                           ),

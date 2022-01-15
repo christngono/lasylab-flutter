@@ -14,6 +14,7 @@ import 'package:lasylab_mobile_app/views/home.dart';
 import 'package:lasylab_mobile_app/views/login.dart';
 import 'package:lasylab_mobile_app/views/menu.dart';
 import 'package:lasylab_mobile_app/views/onboarding_screen.dart';
+import 'package:lasylab_mobile_app/views/otpscreen.dart';
 import 'package:lasylab_mobile_app/views/pre_inscription.dart';
 import 'package:lasylab_mobile_app/views/profil.dart';
 import 'package:lasylab_mobile_app/views/quiz_answer.dart';
@@ -25,8 +26,8 @@ import 'package:lasylab_mobile_app/views/revision_sheet.dart';
 final routes = {
   "/": (BuildContext context) => OnboardingScreen(),
   "/login": (BuildContext context) => LoginPage(),
-  "/register": (BuildContext context) => RegisterPage(),  
-  "/congratulations": (BuildContext context) => Congratulations(),  
+  "/register": (BuildContext context) => RegisterPage(),
+  "/congratulations": (BuildContext context) => Congratulations(),
   "/account_choice": (BuildContext context) => AccountChoicePage(),
   "/classes_choice": (BuildContext context) => ClassesChoice(),
   "/welcome_fees": (BuildContext context) => WelcomeFees(),
@@ -45,4 +46,5 @@ final routes = {
   "/chat_background": (BuildContext context) => ChatBackground(),
   "/research": (BuildContext context) => ResearchPage(),
   "/preinscription": (BuildContext context) => PreInscription(),
+  "otpscreen": (BuildContext context) => OTPScreen()
 };

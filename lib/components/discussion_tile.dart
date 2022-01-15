@@ -30,9 +30,6 @@ class _DiscussionTileState extends State<DiscussionTile> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListTile(
-        onTap: () {
-          Navigator.of(context).pushNamed("/discussions");
-        },
         shape: Border(
           bottom: BorderSide(
             style: BorderStyle.solid,

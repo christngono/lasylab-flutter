@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:lasylab_mobile_app/components/discussion_tile.dart';
+import 'package:lasylab_mobile_app/models/user.dart';
+import 'package:lasylab_mobile_app/services/database_service.dart';
 import 'package:lasylab_mobile_app/views/discussion_page.dart';
 
 class ChatPage extends StatefulWidget {
@@ -13,9 +16,11 @@ class ChatPage extends StatefulWidget {
   _ChatPageState createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
+  AnimationController? animationcontroller;
   @override
   void initState() {
+    super.initState();
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         systemNavigationBarColor: Colors.black, // navigation bar color
@@ -23,7 +28,15 @@ class _ChatPageState extends State<ChatPage> {
         statusBarIconBrightness: Brightness.light, // status bar color
       ),
     );
-    super.initState();
+    animationcontroller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1200));
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    animationcontroller!.dispose();
+    super.dispose();
   }
 
   @override
@@ -145,7 +158,64 @@ class _ChatPageState extends State<ChatPage> {
           ),
           body: TabBarView(
             children: [
-              ListView(
+              StreamBuilder<List<Usermodel>>(
+                  stream: DBService().getDiscussionUser,
+                  builder: (_, s) {
+                    if (s.hasData) {
+                      //liste des utilisateurs
+                      final users = s.data;
+                      return users!.length == 0
+                          ? Center(
+                              child: Text(
+                                "Aucune discussion",
+                                style: GoogleFonts.nunito(
+                                  color: HexColor("#235390"),
+                                  textStyle: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              physics: BouncingScrollPhysics(),
+                              itemCount: users.length,
+                              itemBuilder: (context, index) {
+                                final user = users[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                DiscussionPage(
+                                                  user: user,
+                                                )));
+                                  },
+                                  child: DiscussionTile(
+                                    teacherName: user.nom! + " " + user.prenom!,
+                                    backgroundColor: "#FF760D",
+                                    illustration:
+                                        "assets/images/Female_Memojis.png",
+                                    teacherCourse: "MATHS",
+                                    lastMessage:
+                                        "Equation est un polynomes de second...",
+                                    sendHour: "10:22",
+                                  ),
+                                );
+                              });
+                    } else {
+                      return Center(
+                        child: SpinKitWave(
+                          color: HexColor("#235390"),
+                          size: 25,
+                          controller: animationcontroller,
+                        ),
+                      );
+                    }
+                  }),
+              /*ListView(
                 children: [
                   DiscussionTile(
                     teacherName: "Prof VANESSA",
@@ -204,7 +274,7 @@ class _ChatPageState extends State<ChatPage> {
                     sendHour: "10:22",
                   ),
                 ],
-              ),
+              ),*/
               Container(),
               Container(),
               ListView(

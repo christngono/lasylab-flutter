@@ -350,8 +350,10 @@ class _DiscussionPageState extends State<DiscussionPage>
                         textCapitalization: TextCapitalization.sentences,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
+                              borderRadius: BorderRadius.circular(30.0),
+                              borderSide: BorderSide(
+                                color: HexColor("#235390"),
+                              )),
                           filled: true,
                           hintStyle: TextStyle(color: Colors.grey[800]),
                           hintText: "Type in your text",
@@ -375,14 +377,19 @@ class _DiscussionPageState extends State<DiscussionPage>
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: GestureDetector(
-                      onTap: message.trim().isEmpty ? null : sendMessage,
+                      onTap: message.trim().isEmpty
+                          ? () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (_) {
+                                return Container();
+                              }));
+                            }
+                          : sendMessage,
                       child: Container(
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: message.trim().isEmpty
-                                ? Colors.white
-                                : HexColor("#235390"),
+                            color: HexColor("#235390"),
                             border: Border.all(
                               color: message.trim().isEmpty
                                   ? HexColor("#AFAFAF")
@@ -390,9 +397,7 @@ class _DiscussionPageState extends State<DiscussionPage>
                             )),
                         child: Icon(
                           message.trim().isEmpty ? Icons.mic_none : Icons.send,
-                          color: message.trim().isEmpty
-                              ? HexColor("#AFAFAF")
-                              : Colors.white,
+                          color: Colors.white,
                           size: 26,
                         ),
                       ),

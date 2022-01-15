@@ -142,4 +142,14 @@ class DBService {
       return false;
     }
   }
+
+  Stream<Message> getLastMessage() {
+    return messagecollection
+        .orderBy("createdAt", descending: true)
+        .snapshots()
+        .map((event) => event.docs
+            .map(
+                (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
+            .first);
+  }
 }

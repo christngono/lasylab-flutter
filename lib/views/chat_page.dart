@@ -5,9 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:lasylab_mobile_app/components/discussion_tile.dart';
+import 'package:lasylab_mobile_app/models/message.dart';
 import 'package:lasylab_mobile_app/models/user.dart';
 import 'package:lasylab_mobile_app/services/database_service.dart';
 import 'package:lasylab_mobile_app/views/discussion_page.dart';
+import 'package:logger/logger.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
@@ -161,50 +163,72 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
               StreamBuilder<List<Usermodel>>(
                   stream: DBService().getDiscussionUser,
                   builder: (_, s) {
+                    final users = s.data;
                     if (s.hasData) {
-                      //liste des utilisateurs
-                      final users = s.data;
-                      return users!.length == 0
-                          ? Center(
-                              child: Text(
-                                "Aucune discussion",
-                                style: GoogleFonts.nunito(
+                      //get the last discussion
+                      return StreamBuilder<Message>(
+                          stream: DBService().getLastMessage(),
+                          builder: (context, s2) {
+                            if (s2.hasData) {
+                              //liste des utilisateurs
+                              final lastmessage = s2.data;
+                              return users!.length == 0
+                                  ? Center(
+                                      child: Text(
+                                        "Aucune discussion",
+                                        style: GoogleFonts.nunito(
+                                          color: HexColor("#235390"),
+                                          textStyle: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : ListView.builder(
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.vertical,
+                                      physics: BouncingScrollPhysics(),
+                                      itemCount: users.length,
+                                      itemBuilder: (context, index) {
+                                        final user = users[index];
+                                        var date =
+                                            lastmessage!.createdAt!.toLocal();
+                                        return GestureDetector(
+                                          onTap: () {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        DiscussionPage(
+                                                          user: user,
+                                                        )));
+                                          },
+                                          child: DiscussionTile(
+                                            teacherName:
+                                                user.nom! + " " + user.prenom!,
+                                            backgroundColor: "#FF760D",
+                                            illustration:
+                                                "assets/images/Female_Memojis.png",
+                                            teacherCourse: "MATHS",
+                                            lastMessage:
+                                                lastmessage.type == "texte"
+                                                    ? lastmessage.content!
+                                                    : "Fichier ...",
+                                            sendHour:
+                                                "${date.hour}h ${date.minute}",
+                                          ),
+                                        );
+                                      });
+                            } else {
+                              return Center(
+                                child: SpinKitWave(
                                   color: HexColor("#235390"),
-                                  textStyle: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  size: 25,
+                                  controller: animationcontroller,
                                 ),
-                              ),
-                            )
-                          : ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              physics: BouncingScrollPhysics(),
-                              itemCount: users.length,
-                              itemBuilder: (context, index) {
-                                final user = users[index];
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                DiscussionPage(
-                                                  user: user,
-                                                )));
-                                  },
-                                  child: DiscussionTile(
-                                    teacherName: user.nom! + " " + user.prenom!,
-                                    backgroundColor: "#FF760D",
-                                    illustration:
-                                        "assets/images/Female_Memojis.png",
-                                    teacherCourse: "MATHS",
-                                    lastMessage:
-                                        "Equation est un polynomes de second...",
-                                    sendHour: "10:22",
-                                  ),
-                                );
-                              });
+                              );
+                            }
+                          });
                     } else {
                       return Center(
                         child: SpinKitWave(

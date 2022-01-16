@@ -15,9 +15,9 @@ class Reponse {
     this.texte,
   });
 
-  String? id;
   String? etiquette;
   String? texte;
+  String? id;
 
   factory Reponse.fromJson(Map<String, dynamic> json) => Reponse(
         id: json["id"] == null ? null : json["id"],

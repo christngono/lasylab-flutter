@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:lasylab_mobile_app/models/message.dart';
 import 'package:lasylab_mobile_app/models/question.dart';
 import 'package:lasylab_mobile_app/models/quiz.dart';
+import 'package:lasylab_mobile_app/models/reponse.dart';
 import 'package:lasylab_mobile_app/models/user.dart';
 import 'package:lasylab_mobile_app/services/auth_service.dart';
 import 'package:logger/logger.dart';
@@ -158,23 +160,49 @@ class DBService {
   }
 
   String idlecon = "12323";
-  Stream<Quiz> getQuiz() {
-    return quizcollection
-        .where("id_lecon", isEqualTo: idlecon)
-        .snapshots()
-        .map((event) => event.docs.map((e) {
-              Logger().d(((e.data() as Map<String, dynamic>)["questions"][0]
-                      as DocumentReference)
-                  .get()
-                  .then((value) {
-                DocumentReference reponses =
-                    (value.data() as Map<String, dynamic>)['reponses'][0];
-                var data = reponses.get().then((val) {
-                  Logger().d((val.data() as Map<String, dynamic>));
-                });
-                //Logger().d(data);
-              }));
-              return Quiz.fromJson(e.data() as Map<String, dynamic>);
-            }).first);
+  Future<Quiz?> getQuiz() async {
+    try {
+      Logger().d("after");
+      var collection =
+          quizcollection.where("id_lecon", isEqualTo: idlecon).snapshots();
+      Logger().d("afte2r");
+      var first = (await collection.first);
+
+      var e = first.docs[0];
+
+      List questionsBrutes = ((e.data() as Map<String, dynamic>)["questions"]);
+      var questions = [];
+      for (int i = 0; i < questionsBrutes.length; i++) {
+        var qq = await questionsBrutes[i].get();
+        var question = qq.data() as Map<String, dynamic>;
+        question['id'] = qq.id;
+        List reponses = [];
+        var reponsesBruts = question['reponses'];
+
+        for (int j = 0; j < reponsesBruts.length; j++) {
+          var rr = await reponsesBruts[j].get();
+          var response = rr.data() as Map<String, dynamic>;
+          response['id'] = rr.id;
+          reponses.add(response);
+        }
+        question['reponses'] = reponses;
+
+        var cc = await question['correct'].get();
+        var correct = cc.data() as Map<String, dynamic>;
+        correct['id'] = cc.id;
+        //question['correct'] = await question['correct'].get();
+        question['correct'] = correct;
+        questions.add(question);
+      }
+      //Logger().d(questions);
+      Map<String, dynamic> quiz = e.data() as Map<String, dynamic>;
+      quiz['id'] = e.id;
+      quiz['questions'] = questions;
+      Logger().d(quiz);
+      return Quiz.fromJson(quiz);
+    } catch (e) {
+      Logger().d(e);
+      return null;
+    }
   }
 }

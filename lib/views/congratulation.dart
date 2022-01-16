@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:lasylab_mobile_app/components/fancy_button.dart';
+import 'package:lasylab_mobile_app/models/question.dart';
 import 'package:lasylab_mobile_app/views/menu.dart';
+import 'package:lasylab_mobile_app/views/see_answer.dart';
 
 class Congratulations extends StatelessWidget {
-  const Congratulations({Key? key}) : super(key: key);
-
+  const Congratulations(
+      {Key? key, this.nbretrouves, this.nbretotal, this.questions})
+      : super(key: key);
+  final int? nbretrouves;
+  final int? nbretotal;
+  final List<Question>? questions;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,12 +50,61 @@ class Congratulations extends StatelessWidget {
               child: Image.asset("assets/images/correct.png"),
             ),
           ),
-          SizedBox(
-            width: 120,
-            height: 120,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset("assets/images/mark.png"),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(width: 4, color: Colors.yellow),
+                shape: BoxShape.circle,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 40),
+                      child: Text(
+                        "$nbretrouves",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.openSans(
+                          color: Colors.yellow,
+                          textStyle: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Text(
+                      " / ",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.openSans(
+                        color: Colors.yellow,
+                        textStyle: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 40),
+                      child: Text(
+                        " $nbretotal",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.openSans(
+                          color: Colors.yellow,
+                          textStyle: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
           Container(
@@ -76,7 +131,12 @@ class Congratulations extends StatelessWidget {
                 ),
                 size: 18,
                 color: HexColor("#FFFFFF"),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => SeeAnswer(
+                            questions: questions,
+                          )));
+                },
                 duration: const Duration(milliseconds: 160),
               ),
             ),

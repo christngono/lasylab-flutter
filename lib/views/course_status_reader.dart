@@ -42,12 +42,14 @@ class _CourseStatusReaderState extends State<CourseStatusReader> {
             ..reset()
             ..start();
         } else {
-          setState(() {
-            _variableprogression = _variableprogression + (1 / 100);
-            _timer
-              ..reset()
-              ..start();
-          });
+          if (mounted) {
+            setState(() {
+              _variableprogression = _variableprogression + (1 / 100);
+              _timer
+                ..reset()
+                ..start();
+            });
+          }
         }
       },
     )..start();
@@ -75,13 +77,14 @@ class _CourseStatusReaderState extends State<CourseStatusReader> {
     //     statusBarIconBrightness: Brightness.dark,
     //   ),
     // );
-    
+
     super.initState();
   }
 
   @override
   void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
     super.dispose();
   }
 
@@ -256,7 +259,8 @@ Si le signe entre les deux termes du binôme est une soustraction, vérifier s'i
                             size: 18,
                             color: HexColor("#58CC02"),
                             onPressed: () {
-                              Navigator.of(context).pushNamed("/quiz_launcher");
+                              Navigator.of(context)
+                                  .pushNamed("/quiz_answer"); //quiz_launcher
                             },
                             duration: const Duration(milliseconds: 160),
                           ),

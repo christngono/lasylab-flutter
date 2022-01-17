@@ -26,6 +26,7 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
   PageController? pageController;
   int indexpage = 0;
   int nbretrouves = 0;
+  double ratio = 0;
   @override
   void initState() {
     super.initState();
@@ -67,9 +68,13 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  int i = 0;
   void nextPage() {
     setState(() {
+      i++;
       selectedUserResponse = "";
+      ratio = i / quest!.length;
+      Logger().d(ratio);
     });
 
     pageController!.animateToPage(pageController!.page!.toInt() + 1,
@@ -96,14 +101,14 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
           ),
           title: Container(
             margin: EdgeInsets.symmetric(vertical: 20),
-            width: screenSize.width * 0.9,
+            width: screenSize.width,
             height: 9,
             child: ClipRRect(
               borderRadius: BorderRadius.all(
                 Radius.circular(10),
               ),
               child: LinearProgressIndicator(
-                value: 0.33,
+                value: ratio,
                 valueColor: AlwaysStoppedAnimation<Color>(
                   HexColor("#58CC02"),
                 ),
@@ -252,16 +257,20 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
                                               if (indexpage == quest!.length) {
                                                 Logger().d(
                                                     "nbretrouves $nbretrouves : nbretotal $indexpage");
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            Congratulations(
-                                                              nbretrouves:
-                                                                  nbretrouves,
-                                                              nbretotal:
-                                                                  indexpage,
-                                                              questions: quest,
-                                                            )));
+
+                                                Navigator.pushAndRemoveUntil(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          Congratulations(
+                                                            nbretrouves:
+                                                                nbretrouves,
+                                                            nbretotal:
+                                                                indexpage,
+                                                            questions: quest,
+                                                          )),
+                                                  (route) => false,
+                                                );
                                               } else {
                                                 Navigator.pop(context);
                                                 nextPage();
@@ -313,7 +322,7 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
                     })
                 : Center(
                     child: SpinKitWave(
-                      color: HexColor("#235390"),
+                      color: HexColor("#58CC02"), // HexColor("#235390"),
                       size: 25,
                       controller: animationcontroller,
                     ),

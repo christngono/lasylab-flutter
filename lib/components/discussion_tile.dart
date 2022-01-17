@@ -96,6 +96,7 @@ class _DiscussionTileState extends State<DiscussionTile> {
             color: Colors.black,
             textStyle: TextStyle(
               fontSize: 12,
+              fontStyle: FontStyle.italic,
               fontWeight: FontWeight.normal,
             ),
           ),

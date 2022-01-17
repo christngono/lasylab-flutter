@@ -140,6 +140,40 @@ class DBService {
             .toList());
   }
 
+  /*.where("receiverUID",
+            isEqualTo: myMessage
+                ? receiverUID
+                : (AuthService().user != null
+                    ? AuthService().user!.uid
+                    : user!.id))*/
+  Stream<List<Message>> getMySentFiles() {
+    Usermodel? user = getLocalUser();
+    return messagecollection
+        .where("senderUID",
+            isEqualTo: (AuthService().user != null
+                ? AuthService().user!.uid
+                : user!.id))
+        .snapshots()
+        .map((event) => event.docs
+            .map(
+                (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
+            .toList());
+  }
+
+  Stream<List<Message>> getMyReceivedFiles() {
+    Usermodel? user = getLocalUser();
+    return messagecollection
+        .where("receiverUID",
+            isEqualTo: (AuthService().user != null
+                ? AuthService().user!.uid
+                : user!.id))
+        .snapshots()
+        .map((event) => event.docs
+            .map(
+                (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
+            .toList());
+  }
+
   Future<bool> sendMessage(Message message) async {
     try {
       await messagecollection.doc().set(message.toJson());
@@ -150,6 +184,7 @@ class DBService {
   }
 
   Stream<Message> getLastMessage() {
+    Usermodel? user = getLocalUser();
     return messagecollection
         .orderBy("createdAt", descending: true)
         .snapshots()
@@ -157,6 +192,34 @@ class DBService {
             .map(
                 (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
             .first);
+  }
+
+  Stream<List<Message>> getLastSentMessage() {
+    Usermodel? user = getLocalUser();
+    return messagecollection
+        .where("senderUID",
+            isEqualTo: (AuthService().user != null
+                ? AuthService().user!.uid
+                : user!.id))
+        .snapshots()
+        .map((event) => event.docs
+            .map(
+                (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
+            .toList());
+  }
+
+  Stream<List<Message>> getLastReceivedMessage() {
+    Usermodel? user = getLocalUser();
+    return messagecollection
+        .where("receiverUID",
+            isEqualTo: (AuthService().user != null
+                ? AuthService().user!.uid
+                : user!.id))
+        .snapshots()
+        .map((event) => event.docs
+            .map(
+                (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
+            .toList());
   }
 
   String idlecon = "12323";

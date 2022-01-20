@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:intl/intl.dart';
 import 'package:lasylab_mobile_app/components/fancy_button.dart';
+import 'package:lasylab_mobile_app/models/user.dart';
+import 'package:lasylab_mobile_app/services/database_service.dart';
 import 'package:lasylab_mobile_app/views/biographie.dart';
 
 class ProfilPage extends StatefulWidget {
@@ -14,9 +17,10 @@ class ProfilPage extends StatefulWidget {
 
 class _ProfilPageState extends State<ProfilPage> {
   int _value = 1;
-
+  Usermodel? user;
   @override
   void initState() {
+    super.initState();
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         systemNavigationBarColor: Colors.black,
@@ -24,7 +28,7 @@ class _ProfilPageState extends State<ProfilPage> {
         statusBarIconBrightness: Brightness.dark,
       ),
     );
-    super.initState();
+    user = DBService().getLocalUser();
   }
 
   @override
@@ -80,7 +84,7 @@ class _ProfilPageState extends State<ProfilPage> {
               ),
               Center(
                 child: Text(
-                  "Vanessa",
+                  "${user!.nom} ${user!.prenom}",
                   maxLines: 1,
                   style: GoogleFonts.openSans(
                     textStyle: TextStyle(
@@ -90,6 +94,7 @@ class _ProfilPageState extends State<ProfilPage> {
                   ),
                 ),
               ),
+              SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
@@ -132,12 +137,87 @@ class _ProfilPageState extends State<ProfilPage> {
                     ),
                     size: 18,
                     color: Colors.white.withOpacity(0.9),
-                    onPressed: () {},
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text(
+                                'Mes informations',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.openSans(
+                                  color: HexColor("#4B4B4B"),
+                                  textStyle: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 8),
+                                    child: Text("Nom : ${user!.nom ?? ""}"),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 8),
+                                    child:
+                                        Text("Prénom : ${user!.prenom ?? ""}"),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 8),
+                                    child: Text(
+                                        "Date de naissance : ${DateFormat('yyyy-MM-dd').format(user!.dateNaiss!)}"),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 8),
+                                    child:
+                                        Text("Classe : ${user!.classe ?? ""}"),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 8),
+                                    child: Text("Ecole : ${user!.ecole ?? ""}"),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 8),
+                                    child:
+                                        Text("Téléphone : ${user!.telephone}"),
+                                  ),
+                                ],
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    'Ok',
+                                    style: GoogleFonts.openSans(
+                                      color: HexColor("#4B4B4B"),
+                                      textStyle: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            );
+                          });
+                    },
                     duration: const Duration(milliseconds: 160),
                   ),
                 ),
               ),
-              Padding(
+              /*Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
                   height: 45,
@@ -183,8 +263,8 @@ class _ProfilPageState extends State<ProfilPage> {
                     duration: const Duration(milliseconds: 160),
                   ),
                 ),
-              ),
-              Padding(
+              ),*/
+              /*Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
                   height: 45,
@@ -230,7 +310,7 @@ class _ProfilPageState extends State<ProfilPage> {
                     duration: const Duration(milliseconds: 160),
                   ),
                 ),
-              ),
+              ),*/
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
@@ -274,7 +354,7 @@ class _ProfilPageState extends State<ProfilPage> {
                     size: 18,
                     color: Colors.white.withOpacity(0.9),
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => BiographiePage(),
@@ -285,7 +365,7 @@ class _ProfilPageState extends State<ProfilPage> {
                   ),
                 ),
               ),
-              Padding(
+              /* Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
                   height: 45,
@@ -331,7 +411,7 @@ class _ProfilPageState extends State<ProfilPage> {
                     duration: const Duration(milliseconds: 160),
                   ),
                 ),
-              ),
+              ),*/
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
@@ -379,7 +459,7 @@ class _ProfilPageState extends State<ProfilPage> {
                   ),
                 ),
               ),
-              Padding(
+              /* Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
                   height: 45,
@@ -425,7 +505,7 @@ class _ProfilPageState extends State<ProfilPage> {
                     duration: const Duration(milliseconds: 160),
                   ),
                 ),
-              ),
+              ),*/
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(

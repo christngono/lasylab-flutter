@@ -12,11 +12,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class DBService {
   final CollectionReference usercollection =
-      FirebaseFirestore.instance.collection("users");
+  FirebaseFirestore.instance.collection("users");
   final CollectionReference messagecollection =
-      FirebaseFirestore.instance.collection("messages");
+  FirebaseFirestore.instance.collection("messages");
   final CollectionReference quizcollection =
-      FirebaseFirestore.instance.collection("quiz");
+  FirebaseFirestore.instance.collection("quiz");
   final box = GetStorage();
   Future saveUser(Usermodel user) async {
     try {
@@ -109,12 +109,12 @@ class DBService {
 
     return usercollection
         .where('id',
-            isNotEqualTo:
-                AuthService().user != null ? AuthService().user!.uid : user!.id)
+        isNotEqualTo:
+        AuthService().user != null ? AuthService().user!.uid : user!.id)
         .snapshots()
         .map((event) => event.docs
-            .map((e) => Usermodel.fromJson(e.data() as Map<String, dynamic>))
-            .toList());
+        .map((e) => Usermodel.fromJson(e.data() as Map<String, dynamic>))
+        .toList());
   }
 
   Stream<List<Message>> getMessage(String receiverUID,
@@ -122,22 +122,22 @@ class DBService {
     Usermodel? user = getLocalUser();
     return messagecollection
         .where("senderUID",
-            isEqualTo: myMessage
-                ? (AuthService().user != null
-                    ? AuthService().user!.uid
-                    : user!.id)
-                : receiverUID)
+        isEqualTo: myMessage
+            ? (AuthService().user != null
+            ? AuthService().user!.uid
+            : user!.id)
+            : receiverUID)
         .where("receiverUID",
-            isEqualTo: myMessage
-                ? receiverUID
-                : (AuthService().user != null
-                    ? AuthService().user!.uid
-                    : user!.id))
+        isEqualTo: myMessage
+            ? receiverUID
+            : (AuthService().user != null
+            ? AuthService().user!.uid
+            : user!.id))
         .snapshots()
         .map((event) => event.docs
-            .map(
-                (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
-            .toList());
+        .map(
+            (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
+        .toList());
   }
 
   /*.where("receiverUID",
@@ -150,28 +150,28 @@ class DBService {
     Usermodel? user = getLocalUser();
     return messagecollection
         .where("senderUID",
-            isEqualTo: (AuthService().user != null
-                ? AuthService().user!.uid
-                : user!.id))
+        isEqualTo: (AuthService().user != null
+            ? AuthService().user!.uid
+            : user!.id))
         .snapshots()
         .map((event) => event.docs
-            .map(
-                (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
-            .toList());
+        .map(
+            (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
+        .toList());
   }
 
   Stream<List<Message>> getMyReceivedFiles() {
     Usermodel? user = getLocalUser();
     return messagecollection
         .where("receiverUID",
-            isEqualTo: (AuthService().user != null
-                ? AuthService().user!.uid
-                : user!.id))
+        isEqualTo: (AuthService().user != null
+            ? AuthService().user!.uid
+            : user!.id))
         .snapshots()
         .map((event) => event.docs
-            .map(
-                (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
-            .toList());
+        .map(
+            (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
+        .toList());
   }
 
   Future<bool> sendMessage(Message message) async {
@@ -189,37 +189,37 @@ class DBService {
         .orderBy("createdAt", descending: true)
         .snapshots()
         .map((event) => event.docs
-            .map(
-                (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
-            .first);
+        .map(
+            (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
+        .first);
   }
 
   Stream<List<Message>> getLastSentMessage() {
     Usermodel? user = getLocalUser();
     return messagecollection
         .where("senderUID",
-            isEqualTo: (AuthService().user != null
-                ? AuthService().user!.uid
-                : user!.id))
+        isEqualTo: (AuthService().user != null
+            ? AuthService().user!.uid
+            : user!.id))
         .snapshots()
         .map((event) => event.docs
-            .map(
-                (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
-            .toList());
+        .map(
+            (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
+        .toList());
   }
 
   Stream<List<Message>> getLastReceivedMessage() {
     Usermodel? user = getLocalUser();
     return messagecollection
         .where("receiverUID",
-            isEqualTo: (AuthService().user != null
-                ? AuthService().user!.uid
-                : user!.id))
+        isEqualTo: (AuthService().user != null
+            ? AuthService().user!.uid
+            : user!.id))
         .snapshots()
         .map((event) => event.docs
-            .map(
-                (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
-            .toList());
+        .map(
+            (e) => Message.fromJson(e.data() as Map<String, dynamic>, e.id))
+        .toList());
   }
 
   String idlecon = "12323";
@@ -227,7 +227,7 @@ class DBService {
     try {
       Logger().d("after");
       var collection =
-          quizcollection.where("id_lecon", isEqualTo: idlecon).snapshots();
+      quizcollection.where("id_lecon", isEqualTo: idlecon).snapshots();
       Logger().d("afte2r");
       var first = (await collection.first);
 

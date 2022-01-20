@@ -33,7 +33,35 @@ class _RegisterPageState extends State<RegisterPage>
   late List<TextEditingController> fields;
   final formGlobalKey = GlobalKey<FormState>();
   AuthService auth = AuthService();
+  List<String> classeitems = [
+    "SIL",
+    "CP",
+    "CE1",
+    "CE2",
+    "CM1",
+    "CM2",
+    "6e",
+    "5e",
+    "4e",
+    "3e",
+    "2nde",
+    "1ère",
+    "Tle"
+  ];
+  String selectedclassitem = "";
 
+  List<String> schoolitems = [
+    "Institut Victor Hugo",
+    "Collège Vogt",
+    "Lycée de Mendong",
+    "Lycée de Biyem assi",
+    "Collège Saint Benoit",
+    "Lycée d'Efoulan",
+    "Collège la retraite",
+    "Lycée Général Leclerc",
+    "Autre"
+  ];
+  String selectedschoolitem = "";
   @override
   void initState() {
     super.initState();
@@ -43,15 +71,20 @@ class _RegisterPageState extends State<RegisterPage>
     school = TextEditingController();
     password = TextEditingController();
     birthdate = TextEditingController();
-
+    if (mounted) {
+      setState(() {
+        selectedschoolitem = schoolitems[0];
+        selectedclassitem = classeitems[0];
+      });
+    }
     fields = [
       name,
       surName,
       phone,
-      school,
       password,
       birthdate,
     ];
+
     animationcontroller = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1200));
   }
@@ -243,39 +276,124 @@ class _RegisterPageState extends State<RegisterPage>
                             ),
                           ),
                         ),
-                        FittedBox(
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: SizedBox(
-                                width: screenSize.width * 0.9,
-                                height: 40,
-                                child: TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Entrer votre école";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  keyboardType: TextInputType.text,
-                                  controller: school,
-                                  obscureText: false,
-                                  decoration: InputDecoration(
-                                    labelText: "Ecole",
-                                    hintStyle: TextStyle(fontSize: 16),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                      borderSide: BorderSide(
-                                        width: 2,
-                                        color: Colors.grey,
+                        selectedschoolitem == "Autre"
+                            ? FittedBox(
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: SizedBox(
+                                      width: screenSize.width * 0.9,
+                                      height: 40,
+                                      child: TextFormField(
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return "Entrer votre école";
+                                          } else {
+                                            return null;
+                                          }
+                                        },
+                                        keyboardType: TextInputType.text,
+                                        controller: school,
+                                        obscureText: false,
+                                        decoration: InputDecoration(
+                                          labelText: "Ecole",
+                                          hintStyle: TextStyle(fontSize: 16),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            borderSide: BorderSide(
+                                              width: 2,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : FittedBox(
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: SizedBox(
+                                      width: screenSize.width * 0.9,
+                                      height: 40,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(10.0),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            border: Border.all(
+                                              color: Colors.grey,
+                                            )),
+                                        child: DropdownButtonHideUnderline(
+                                          child: DropdownButton<String>(
+                                              value: selectedschoolitem,
+                                              items: schoolitems
+                                                  .map((e) => DropdownMenuItem(
+                                                      child: Text(e), value: e))
+                                                  .toList(),
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  selectedschoolitem = value!;
+                                                  fields = selectedschoolitem !=
+                                                          "Autre"
+                                                      ? [
+                                                          name,
+                                                          surName,
+                                                          phone,
+                                                          password,
+                                                          birthdate,
+                                                        ]
+                                                      : [
+                                                          name,
+                                                          surName,
+                                                          phone,
+                                                          school,
+                                                          password,
+                                                          birthdate,
+                                                        ];
+                                                  Logger().d(fields.length);
+                                                });
+                                              }),
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
+                        //ajout du champ pour renseigner la classe
+                        FittedBox(
+                          child: Center(
+                              child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: SizedBox(
+                                    width: screenSize.width * 0.9,
+                                    height: 40,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(10.0),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          border: Border.all(
+                                            color: Colors.grey,
+                                          )),
+                                      child: DropdownButtonHideUnderline(
+                                        child: DropdownButton<String>(
+                                            value: selectedclassitem,
+                                            items: classeitems
+                                                .map((e) => DropdownMenuItem(
+                                                    child: Text(e), value: e))
+                                                .toList(),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                selectedclassitem = value!;
+                                              });
+                                            }),
+                                      ),
+                                    ),
+                                  ))),
                         ),
                         FittedBox(
                           child: Center(
@@ -318,7 +436,7 @@ class _RegisterPageState extends State<RegisterPage>
                             await showDatePicker(
                               context: context,
                               initialDate: DateTime.now(),
-                              firstDate: DateTime(2010),
+                              firstDate: DateTime(1900),
                               lastDate: DateTime.now(),
                             ).then((value) {
                               setState(() {
@@ -327,51 +445,59 @@ class _RegisterPageState extends State<RegisterPage>
                               });
                             });
                           },
-                          child: FittedBox(
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: SizedBox(
-                                  width: screenSize.width * 0.9,
-                                  height: 40,
-                                  child: TextFormField(
-                                    enabled: false,
-                                    validator: (value) {
-                                      if (value!.isEmpty ||
-                                          birthdate.text.isEmpty) {
-                                        return "Entrer votre date de naissance";
-                                      } else {
-                                        return null;
-                                      }
-                                    },
-                                    controller: birthdate,
-                                    decoration: InputDecoration(
-                                      suffixIcon: GestureDetector(
-                                        onTap: () async {
-                                          await showDatePicker(
-                                            context: context,
-                                            initialDate: DateTime.now(),
-                                            firstDate: DateTime(2010),
-                                            lastDate: DateTime(2025),
-                                          ).then((value) {
-                                            setState(() {
-                                              birthdate.text =
-                                                  "${DateFormat('yyyy-MM-dd').format(value!)}";
-                                            });
-                                          });
+                          child: Container(
+                            width: screenSize.width * 0.9,
+                            height: 60,
+                            color: Colors.transparent,
+                            child: FittedBox(
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: SizedBox(
+                                    width: screenSize.width * 0.9,
+                                    height: 40,
+                                    child: IgnorePointer(
+                                      child: TextFormField(
+                                        enabled: true,
+                                        validator: (value) {
+                                          if (value!.isEmpty ||
+                                              birthdate.text.isEmpty) {
+                                            return "Entrer votre date de naissance";
+                                          } else {
+                                            return null;
+                                          }
                                         },
-                                        child: Icon(
-                                          Icons.date_range,
-                                          color: HexColor("#58CC02"),
-                                        ),
-                                      ),
-                                      labelText: "Date de Naissance",
-                                      hintStyle: TextStyle(fontSize: 16),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                        borderSide: BorderSide(
-                                          width: 2,
-                                          color: Colors.grey,
+                                        controller: birthdate,
+                                        decoration: InputDecoration(
+                                          suffixIcon: GestureDetector(
+                                            onTap: () async {
+                                              await showDatePicker(
+                                                context: context,
+                                                initialDate: DateTime.now(),
+                                                firstDate: DateTime(2010),
+                                                lastDate: DateTime(2025),
+                                              ).then((value) {
+                                                setState(() {
+                                                  birthdate.text =
+                                                      "${DateFormat('yyyy-MM-dd').format(value!)}";
+                                                });
+                                              });
+                                            },
+                                            child: Icon(
+                                              Icons.date_range,
+                                              color: HexColor("#58CC02"),
+                                            ),
+                                          ),
+                                          labelText: "Date de Naissance",
+                                          hintStyle: TextStyle(fontSize: 16),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            borderSide: BorderSide(
+                                              width: 2,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -415,7 +541,10 @@ class _RegisterPageState extends State<RegisterPage>
                             ),
                           ),
                         ),
-                        isFilled() == true
+                        isFilled(
+                                    isSelectedschoolitem:
+                                        selectedschoolitem != "Autre") ==
+                                true
                             ? Container(
                                 color: Colors.white,
                                 margin: const EdgeInsets.only(
@@ -496,8 +625,13 @@ class _RegisterPageState extends State<RegisterPage>
                                                                     .text,
                                                                 telephone:
                                                                     phone.text,
-                                                                ecole:
-                                                                    school.text,
+                                                                ecole: selectedschoolitem ==
+                                                                        "Autre"
+                                                                    ? school
+                                                                        .text
+                                                                    : selectedschoolitem,
+                                                                classe:
+                                                                    selectedclassitem,
                                                                 password:
                                                                     password
                                                                         .text,
@@ -598,11 +732,11 @@ class _RegisterPageState extends State<RegisterPage>
     );
   }
 
-  bool isFilled() {
+  bool isFilled({bool isSelectedschoolitem = false}) {
     int check = 0;
     for (var field in fields) {
       if (field.text != "") check++;
     }
-    return check == 6;
+    return !isSelectedschoolitem ? check == 6 : check == 5;
   }
 }

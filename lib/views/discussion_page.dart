@@ -41,7 +41,7 @@ class _DiscussionPageState extends State<DiscussionPage>
           ? AuthService().user!.uid
           : DBService().getLocalUser()!.id,
     );
-    Logger().d(msg.toJson().toString());
+
     await DBService().sendMessage(msg);
     Logger().d("message envoyé");
     _controller.clear();

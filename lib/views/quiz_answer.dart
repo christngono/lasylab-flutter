@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -10,7 +11,7 @@ import 'package:lasylab_mobile_app/models/question.dart';
 import 'package:lasylab_mobile_app/models/quiz.dart';
 import 'package:lasylab_mobile_app/services/database_service.dart';
 import 'package:lasylab_mobile_app/views/congratulation.dart';
-import 'package:logger/logger.dart';
+import 'package:logger/logger.dart' as TheLogger;
 
 class QuizAnswer extends StatefulWidget {
   const QuizAnswer({Key? key}) : super(key: key);
@@ -27,6 +28,13 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
   int indexpage = 0;
   int nbretrouves = 0;
   double ratio = 0;
+
+  //pour l'audio
+  AudioPlayer audioPlayer = AudioPlayer();
+  PlayerState audioPlayerState = PlayerState.PAUSED;
+  AudioCache? audioCache;
+  String path1 = "audio/duolingo_correct.mp3";
+  String path2 = "audio/duolingo_false.mp3";
   @override
   void initState() {
     super.initState();
@@ -58,6 +66,13 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
             fontSize: 16.0);
       }
     });
+
+    audioCache = AudioCache(fixedPlayer: audioPlayer);
+    audioPlayer.onPlayerStateChanged.listen((PlayerState s) {
+      setState(() {
+        audioPlayerState = s;
+      });
+    });
   }
 
   @override
@@ -65,7 +80,18 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
     // TODO: implement dispose
     animationcontroller!.dispose();
     pageController!.dispose();
+    audioPlayer.release();
+    audioPlayer.dispose();
+    audioCache!.clearAll();
     super.dispose();
+  }
+
+  playMusic(String path) async {
+    await audioCache!.play(path);
+  }
+
+  pauseMusic() async {
+    await audioPlayer.pause();
   }
 
   int i = 0;
@@ -74,7 +100,7 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
       i++;
       selectedUserResponse = "";
       ratio = i / quest!.length;
-      Logger().d(ratio);
+      TheLogger.Logger().d(ratio);
     });
 
     pageController!.animateToPage(pageController!.page!.toInt() + 1,
@@ -162,7 +188,7 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
                                                 horizontal: 10),
                                             child: Text(
                                               "${e.etiquette} ) ",
-                                              textAlign: TextAlign.center,
+                                              textAlign: TextAlign.justify,
                                               style: GoogleFonts.openSans(
                                                 color: Colors.black,
                                                 textStyle: TextStyle(
@@ -227,7 +253,7 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
                               ),
                               size: 18,
                               color: HexColor("#58CC02"),
-                              onPressed: () {
+                              onPressed: () async {
                                 if (selectedUserResponse.isEmpty) {
                                   Fluttertoast.showToast(
                                       msg: "Veuillez choisir une réponse",
@@ -242,6 +268,7 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
                                     setState(() {
                                       nbretrouves = nbretrouves + 1;
                                     });
+                                    await playMusic(path1);
                                     showModalBottomSheet<void>(
                                         context: context,
                                         isDismissible: false,
@@ -255,7 +282,7 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
                                             texte: "Bonne réponse",
                                             onpress: () {
                                               if (indexpage == quest!.length) {
-                                                Logger().d(
+                                                TheLogger.Logger().d(
                                                     "nbretrouves $nbretrouves : nbretotal $indexpage");
 
                                                 Navigator.pushAndRemoveUntil(
@@ -279,6 +306,7 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
                                           );
                                         });
                                   } else {
+                                    await playMusic(path2);
                                     showModalBottomSheet<void>(
                                         context: context,
                                         isDismissible: false,
@@ -292,7 +320,7 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
                                             texte: "Mauvais réponse",
                                             onpress: () {
                                               if (indexpage == quest!.length) {
-                                                Logger().d(
+                                                TheLogger.Logger().d(
                                                     "nbretrouves $nbretrouves : nbretotal $indexpage");
                                                 Navigator.of(context).push(
                                                     MaterialPageRoute(

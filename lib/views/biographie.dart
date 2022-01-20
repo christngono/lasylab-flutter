@@ -36,7 +36,9 @@ class _BiographiePageState extends State<BiographiePage> {
             elevation: 0,
             backgroundColor: Colors.white,
             leading: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pop(context);
+              },
               icon: Icon(
                 Icons.arrow_back,
                 color: HexColor("#AFAFAF"),

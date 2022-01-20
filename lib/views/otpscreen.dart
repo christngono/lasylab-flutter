@@ -21,6 +21,7 @@ class OTPScreen extends StatefulWidget {
       this.nom,
       this.prenom,
       this.ecole,
+      this.classe,
       this.password,
       this.birthdate})
       : super(key: key);
@@ -28,6 +29,7 @@ class OTPScreen extends StatefulWidget {
   final String? nom;
   final String? prenom;
   final String? ecole;
+  final String? classe;
   final String? password;
   final String? birthdate;
   @override
@@ -206,6 +208,7 @@ class _OTPScreenState extends State<OTPScreen> with TickerProviderStateMixin {
                                             prenom: widget.prenom,
                                             telephone: widget.telephone,
                                             ecole: widget.ecole,
+                                            classe: widget.classe,
                                             password: widget.password,
                                             dateNaiss: DateFormat('yyyy-MM-dd')
                                                 .parse(widget.birthdate!)));

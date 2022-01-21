@@ -192,22 +192,22 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                                   for (int j = 0; j < messages.length; j++) {
                                     var message = messages[j];
                                     var correspondentid =
-                                    message.senderUid != id
-                                        ? message.senderUid
-                                        : message.receiverUid;
+                                        message.senderUid != id
+                                            ? message.senderUid
+                                            : message.receiverUid;
                                     if (!conversations
                                         .containsKey(correspondentid)) {
                                       conversations[correspondentid!] = message;
                                     }
                                   }
                                   var usersIWroteTo =
-                                  conversations.keys.map((key) {
+                                      conversations.keys.map((key) {
                                     return users!.firstWhere(
-                                            (element) => element.id == key);
+                                        (element) => element.id == key);
                                   });
 
                                   var usersIDidntwriteTo = users!.where(
-                                          (element) => !conversations.keys
+                                      (element) => !conversations.keys
                                           .contains(element.id));
 
                                   var usersClassified = [
@@ -219,62 +219,62 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                                   // Logger().d(lastmessage);
                                   return users.length == 0
                                       ? Center(
-                                    child: Text(
-                                      "Aucune discussion",
-                                      style: GoogleFonts.nunito(
-                                        color: HexColor("#235390"),
-                                        textStyle: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                      : ListView.builder(
-                                      shrinkWrap: true,
-                                      scrollDirection: Axis.vertical,
-                                      physics: BouncingScrollPhysics(),
-                                      itemCount: usersClassified.length,
-                                      itemBuilder: (context, index) {
-                                        final user = usersClassified[index];
-                                        bool hasChatted = conversations
-                                            .containsKey(user.id);
-                                        var lastmessage = hasChatted
-                                            ? conversations[user.id]
-                                            : null;
-                                        var date = hasChatted
-                                            ? lastmessage.createdAt!
-                                            .toLocal()
-                                            : null;
-                                        return GestureDetector(
-                                          onTap: () {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        DiscussionPage(
-                                                          user: user,
-                                                        )));
-                                          },
-                                          child: DiscussionTile(
-                                            teacherName: user.nom! +
-                                                " " +
-                                                user.prenom!,
-                                            backgroundColor: "#FF760D",
-                                            illustration:
-                                            "assets/images/Female_Memojis.png",
-                                            teacherCourse: "MATHS",
-                                            lastMessage: hasChatted
-                                                ? (lastmessage.type ==
-                                                "texte"
-                                                ? lastmessage.content!
-                                                : "Fichier ...")
-                                                : "Aucun Message",
-                                            sendHour: hasChatted
-                                                ? "${date.hour}h ${date.minute}"
-                                                : "",
+                                          child: Text(
+                                            "Aucune discussion",
+                                            style: GoogleFonts.nunito(
+                                              color: HexColor("#235390"),
+                                              textStyle: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                           ),
-                                        );
-                                      });
+                                        )
+                                      : ListView.builder(
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          physics: BouncingScrollPhysics(),
+                                          itemCount: usersClassified.length,
+                                          itemBuilder: (context, index) {
+                                            final user = usersClassified[index];
+                                            bool hasChatted = conversations
+                                                .containsKey(user.id);
+                                            var lastmessage = hasChatted
+                                                ? conversations[user.id]
+                                                : null;
+                                            var date = hasChatted
+                                                ? lastmessage.createdAt!
+                                                    .toLocal()
+                                                : null;
+                                            return GestureDetector(
+                                              onTap: () {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            DiscussionPage(
+                                                              user: user,
+                                                            )));
+                                              },
+                                              child: DiscussionTile(
+                                                teacherName: user.nom! +
+                                                    " " +
+                                                    user.prenom!,
+                                                backgroundColor: "#FF760D",
+                                                illustration:
+                                                    "assets/images/Female_Memojis.png",
+                                                teacherCourse: "MATHS",
+                                                lastMessage: hasChatted
+                                                    ? (lastmessage.type ==
+                                                            "texte"
+                                                        ? lastmessage.content!
+                                                        : "Fichier ...")
+                                                    : "Aucun Message",
+                                                sendHour: hasChatted
+                                                    ? "${date.hour}h ${date.minute}"
+                                                    : "",
+                                              ),
+                                            );
+                                          });
                                 } else {
                                   return Center(
                                     child: SpinKitWave(
@@ -322,64 +322,64 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                             //on a recupéré les messages emis et recus
                             var messages = [...s1.data!, ...s2.data!];
                             messages.sort(
-                                    (i, j) => i.createdAt!.compareTo(j.createdAt!));
+                                (i, j) => i.createdAt!.compareTo(j.createdAt!));
                             messages = messages.reversed.toList();
                             List<Message> files = messages
                                 .where((element) => element.type != "texte")
                                 .toList();
                             return files.length == 0
                                 ? Center(
-                              child: Text(
-                                "Aucun fichier",
-                                style: GoogleFonts.nunito(
-                                  color: HexColor("#235390"),
-                                  textStyle: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            )
-                                : StaggeredGridView.countBuilder(
-                              staggeredTileBuilder: (index) {
-                                return StaggeredTile.count(
-                                    1, index.isEven ? 1.2 : 1.8);
-                              },
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 12,
-                              mainAxisSpacing: 14,
-                              itemCount: files.length,
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (_) {
-                                          return DetailImage(
-                                            image: files[index].content!,
-                                          );
-                                        }));
-                                  },
-                                  child: Hero(
-                                    tag: "imageHero",
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.transparent,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(15))),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(15)),
-                                        child: FadeInImage.memoryNetwork(
-                                          placeholder: kTransparentImage,
-                                          image: files[index].content!,
-                                          fit: BoxFit.cover,
+                                    child: Text(
+                                      "Aucun fichier",
+                                      style: GoogleFonts.nunito(
+                                        color: HexColor("#235390"),
+                                        textStyle: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
-                                  ),
-                                );
-                              },
-                            );
+                                  )
+                                : StaggeredGridView.countBuilder(
+                                    staggeredTileBuilder: (index) {
+                                      return StaggeredTile.count(
+                                          1, index.isEven ? 1.2 : 1.8);
+                                    },
+                                    crossAxisCount: 2,
+                                    crossAxisSpacing: 12,
+                                    mainAxisSpacing: 14,
+                                    itemCount: files.length,
+                                    itemBuilder: (context, index) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(context,
+                                              MaterialPageRoute(builder: (_) {
+                                            return DetailImage(
+                                              image: files[index].content!,
+                                            );
+                                          }));
+                                        },
+                                        child: Hero(
+                                          tag: "imageHero",
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.transparent,
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(15))),
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(15)),
+                                              child: FadeInImage.memoryNetwork(
+                                                placeholder: kTransparentImage,
+                                                image: files[index].content!,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
                           } else {
                             return Center(
                               child: SpinKitWave(

@@ -166,8 +166,9 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           ),
           body: TabBarView(
             children: [
+              //partie dicussion avec les enseignants
               StreamBuilder<List<Usermodel>>(
-                  stream: DBService().getDiscussionUser,
+                  stream: DBService().getDiscussionUser(),
                   builder: (_, s) {
                     final users = s.data;
                     if (s.hasData) {
@@ -182,6 +183,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                                 if (s2.hasData) {
                                   //on a recupéré les messages des deux parties
                                   var messages = [...s1.data!, ...s2.data!];
+                                  Logger().d(messages);
                                   messages.sort((i, j) =>
                                       i.createdAt!.compareTo(j.createdAt!));
                                   messages = messages.reversed.toList();
@@ -200,23 +202,30 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                                       conversations[correspondentid!] = message;
                                     }
                                   }
-                                  var usersIWroteTo =
-                                      conversations.keys.map((key) {
-                                    return users!.firstWhere(
-                                        (element) => element.id == key);
-                                  });
-
-                                  var usersIDidntwriteTo = users!.where(
-                                      (element) => !conversations.keys
-                                          .contains(element.id));
+                                  var usersIWroteTo = [];
+                                  var conversationList =
+                                      conversations.keys.toList();
+                                  for (var i = 0;
+                                      i < conversationList.length;
+                                      i++) {
+                                    var uss = users!
+                                        .where((element) =>
+                                            conversationList[i] == element.id)
+                                        .toList();
+                                    if (uss.length != 0) {
+                                      usersIWroteTo.add(uss[0]);
+                                    }
+                                  }
+                                  var usersIDidntwriteTo = users!
+                                      .where((element) => !conversations.keys
+                                          .contains(element.id))
+                                      .toList();
 
                                   var usersClassified = [
                                     ...usersIWroteTo,
                                     ...usersIDidntwriteTo
                                   ];
 
-                                  // var lastmessage = messages[0];
-                                  // Logger().d(lastmessage);
                                   return users.length == 0
                                       ? Center(
                                           child: Text(
@@ -307,7 +316,157 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
                       );
                     }
                   }),
-              Container(),
+              //partie privée
+              StreamBuilder<List<Usermodel>>(
+                  stream: DBService().getDiscussionUser(type: "user"),
+                  builder: (_, s) {
+                    final users = s.data;
+                    if (s.hasData) {
+                      //get the last discussion
+                      return StreamBuilder<List<Message>>(
+                        stream: DBService().getLastReceivedMessage(),
+                        builder: (context, s1) {
+                          if (s1.hasData) {
+                            return StreamBuilder<List<Message>>(
+                              stream: DBService().getLastSentMessage(),
+                              builder: (context, s2) {
+                                if (s2.hasData) {
+                                  //on a recupéré les messages des deux parties
+                                  var messages = [...s1.data!, ...s2.data!];
+                                  Logger().d(messages);
+                                  messages.sort((i, j) =>
+                                      i.createdAt!.compareTo(j.createdAt!));
+                                  messages = messages.reversed.toList();
+                                  Map<String, dynamic> conversations = {};
+                                  var id = (AuthService().user != null
+                                      ? AuthService().user!.uid
+                                      : currentuser!.id);
+                                  for (int j = 0; j < messages.length; j++) {
+                                    var message = messages[j];
+                                    var correspondentid =
+                                        message.senderUid != id
+                                            ? message.senderUid
+                                            : message.receiverUid;
+                                    if (!conversations
+                                        .containsKey(correspondentid)) {
+                                      conversations[correspondentid!] = message;
+                                    }
+                                  }
+
+                                  var usersIWroteTo = [];
+                                  var conversationList =
+                                      conversations.keys.toList();
+                                  for (var i = 0;
+                                      i < conversationList.length;
+                                      i++) {
+                                    var uss = users!
+                                        .where((element) =>
+                                            conversationList[i] == element.id)
+                                        .toList();
+                                    if (uss.length != 0) {
+                                      usersIWroteTo.add(uss[0]);
+                                    }
+                                  }
+                                  var usersIDidntwriteTo = users!
+                                      .where((element) => !conversations.keys
+                                          .contains(element.id))
+                                      .toList();
+
+                                  var usersClassified = [
+                                    ...usersIWroteTo,
+                                    ...usersIDidntwriteTo
+                                  ];
+
+                                  return users.length == 0
+                                      ? Center(
+                                          child: Text(
+                                            "Aucune discussion",
+                                            style: GoogleFonts.nunito(
+                                              color: HexColor("#235390"),
+                                              textStyle: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : ListView.builder(
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          physics: BouncingScrollPhysics(),
+                                          itemCount: usersClassified.length,
+                                          itemBuilder: (context, index) {
+                                            final user = usersClassified[index];
+                                            bool hasChatted = conversations
+                                                .containsKey(user.id);
+                                            var lastmessage = hasChatted
+                                                ? conversations[user.id]
+                                                : null;
+                                            var date = hasChatted
+                                                ? lastmessage.createdAt!
+                                                    .toLocal()
+                                                : null;
+                                            return GestureDetector(
+                                              onTap: () {
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            DiscussionPage(
+                                                              user: user,
+                                                            )));
+                                              },
+                                              child: DiscussionTile(
+                                                teacherName: user.nom! +
+                                                    " " +
+                                                    user.prenom!,
+                                                backgroundColor: "#FF760D",
+                                                illustration:
+                                                    "assets/images/Female_Memojis.png",
+                                                teacherCourse: "MATHS",
+                                                lastMessage: hasChatted
+                                                    ? (lastmessage.type ==
+                                                            "texte"
+                                                        ? lastmessage.content!
+                                                        : "Fichier ...")
+                                                    : "Aucun Message",
+                                                sendHour: hasChatted
+                                                    ? "${date.hour}h ${date.minute}"
+                                                    : "",
+                                              ),
+                                            );
+                                          });
+                                } else {
+                                  return Center(
+                                    child: SpinKitWave(
+                                      color: HexColor("#235390"),
+                                      size: 25,
+                                      controller: animationcontroller,
+                                    ),
+                                  );
+                                }
+                              },
+                            );
+                          } else {
+                            return Center(
+                              child: SpinKitWave(
+                                color: HexColor("#235390"),
+                                size: 25,
+                                controller: animationcontroller,
+                              ),
+                            );
+                          }
+                        },
+                      );
+                    } else {
+                      return Center(
+                        child: SpinKitWave(
+                          color: HexColor("#235390"),
+                          size: 25,
+                          controller: animationcontroller,
+                        ),
+                      );
+                    }
+                  }),
               Container(),
               Padding(
                 padding: const EdgeInsets.all(10),

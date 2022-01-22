@@ -104,13 +104,14 @@ class DBService {
     }
   }
 
-  Stream<List<Usermodel>> get getDiscussionUser {
+  Stream<List<Usermodel>> getDiscussionUser({String type = "teacher"}) {
     Usermodel? user = getLocalUser();
 
     return usercollection
         .where('id',
             isNotEqualTo:
                 AuthService().user != null ? AuthService().user!.uid : user!.id)
+        .where("type", isEqualTo: type)
         .snapshots()
         .map((event) => event.docs
             .map((e) => Usermodel.fromJson(e.data() as Map<String, dynamic>))

@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -6,13 +9,62 @@ import 'package:lasylab_mobile_app/models/question.dart';
 import 'package:lasylab_mobile_app/views/menu.dart';
 import 'package:lasylab_mobile_app/views/see_answer.dart';
 
-class Congratulations extends StatelessWidget {
+class Congratulations extends StatefulWidget {
   const Congratulations(
       {Key? key, this.nbretrouves, this.nbretotal, this.questions})
       : super(key: key);
   final int? nbretrouves;
   final int? nbretotal;
   final List<Question>? questions;
+
+  @override
+  _CongratulationsState createState() => _CongratulationsState();
+}
+
+class _CongratulationsState extends State<Congratulations> {
+  late ConfettiController controllerCenter;
+
+  @override
+  void initState() {
+    super.initState();
+    controllerCenter =
+        ConfettiController(duration: const Duration(seconds: 30));
+    if (mounted) {
+      controllerCenter.play();
+    }
+  }
+
+  @override
+  void dispose() {
+    controllerCenter.dispose();
+    super.dispose();
+  }
+
+  /// A custom Path to paint stars.
+  Path drawStar(Size size) {
+    // Method to convert degree to radians
+    double degToRad(double deg) => deg * (pi / 180.0);
+
+    const numberOfPoints = 5;
+    final halfWidth = size.width / 2;
+    final externalRadius = halfWidth;
+    final internalRadius = halfWidth / 2.5;
+    final degreesPerStep = degToRad(360 / numberOfPoints);
+    final halfDegreesPerStep = degreesPerStep / 2;
+    final path = Path();
+    final fullAngle = degToRad(360);
+    path.moveTo(size.width, halfWidth);
+
+    for (double step = 0; step < fullAngle; step += degreesPerStep) {
+      path.lineTo(halfWidth + externalRadius * cos(step),
+          halfWidth + externalRadius * sin(step));
+      path.lineTo(halfWidth + internalRadius * cos(step + halfDegreesPerStep),
+          halfWidth + internalRadius * sin(step + halfDegreesPerStep));
+    }
+    path.close();
+    return path;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,12 +86,30 @@ class Congratulations extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
+          /*SizedBox(
             width: double.infinity,
             height: 120,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Image.asset("assets/images/excellent.png"),
+            ),
+          ),*/
+          Align(
+            alignment: Alignment.center,
+            child: ConfettiWidget(
+              confettiController: controllerCenter,
+              blastDirectionality: BlastDirectionality
+                  .explosive, // don't specify a direction, blast randomly
+              shouldLoop:
+                  true, // start again as soon as the animation is finished
+              colors: const [
+                Colors.green,
+                Colors.blue,
+                Colors.pink,
+                Colors.orange,
+                Colors.purple
+              ], // manually specify the colors to be used
+              createParticlePath: drawStar, // define a custom shape/path.
             ),
           ),
           SizedBox(
@@ -66,7 +136,7 @@ class Congratulations extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 40),
                       child: Text(
-                        "$nbretrouves",
+                        "${widget.nbretrouves}",
                         textAlign: TextAlign.center,
                         style: GoogleFonts.openSans(
                           color: Colors.yellow,
@@ -91,7 +161,7 @@ class Congratulations extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 40),
                       child: Text(
-                        " $nbretotal",
+                        " ${widget.nbretotal}",
                         textAlign: TextAlign.center,
                         style: GoogleFonts.openSans(
                           color: Colors.yellow,
@@ -134,7 +204,7 @@ class Congratulations extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => SeeAnswer(
-                            questions: questions,
+                            questions: widget.questions,
                           )));
                 },
                 duration: const Duration(milliseconds: 160),

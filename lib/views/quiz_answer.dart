@@ -69,9 +69,11 @@ class _QuizAnswerState extends State<QuizAnswer> with TickerProviderStateMixin {
 
     audioCache = AudioCache(fixedPlayer: audioPlayer);
     audioPlayer.onPlayerStateChanged.listen((PlayerState s) {
-      setState(() {
-        audioPlayerState = s;
-      });
+      if (mounted) {
+        setState(() {
+          audioPlayerState = s;
+        });
+      }
     });
   }
 

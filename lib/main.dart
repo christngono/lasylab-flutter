@@ -6,6 +6,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:lasylab_mobile_app/services/database_service.dart';
 import 'package:logger/logger.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
